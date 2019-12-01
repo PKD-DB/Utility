@@ -1,0 +1,116 @@
+
+Option Explicit
+Option Compare Text
+
+'*******************************************************************************
+'Developer      : Prince Dubey
+'Date           : 26 Jan 2019
+'Description    : This sub is the entry point of the program.
+'********************************************************************************
+Public Sub Main()
+
+    Dim lngRes          As Long
+    Dim strError        As String
+    Dim strNumberText   As String
+    
+    lngRes = 0
+    strError = vbNullString
+    
+    'Strings I have used to tyest
+    strNumberText = "Ninety Nine Thousand Five Hundred Eighty Three"
+    'strNumberText = "Three Thousand Five Hundred Thirty Seven"
+    'strNumberText = "Ten Thousand Five"
+    'strNumberText = "Twelve"
+    'strNumberText = "Ninety Nine Thousand Nine Hundred Ninety Nine"
+    'strNumberText = vbNullString
+    
+    MsgBox "Is Program Executed Successfully = " & StringToLong(strNumberText, lngRes, strError) & vbNewLine & _
+            "Status of Error variable : " & strError & vbNewLine & "The Result Is : " & lngRes
+
+End Sub
+
+
+'*******************************************************************************
+'Developer      : Prince Dubey
+'Date           : 26 Jan 2019
+'Description    : This Function Converts any english language number into Number.
+'********************************************************************************
+Function StringToLong(ByVal strNum As String, ByRef lngRes As Long, ByRef strError As String) As Boolean
+
+    Dim lngCtr      As Long
+    Dim lngNum      As Long
+    Dim lngSum      As Long
+    Dim lngPre      As Long
+    Dim varArrNum   As Variant
+    
+    On Error GoTo LBL:
+    
+    If strNum = "" Then GoTo LBL:
+    
+    lngSum = 0:
+    varArrNum = Split(Trim(strNum), " ")
+    
+    If InStr(1, strNum, "Thousand", vbTextCompare) <> 0 And InStr(1, strNum, "Hundred", vbTextCompare) <> 0 Then
+        
+        For lngCtr = LBound(varArrNum, 1) To UBound(varArrNum, 1)
+            
+            If varArrNum(lngCtr) <> "Thousand" And varArrNum(lngCtr) <> "Hundred" Then
+                lngSum = lngSum + ReturnNum(varArrNum(lngCtr))
+                lngPre = ReturnNum(varArrNum(lngCtr))
+            Else
+                If varArrNum(lngCtr) = "Hundred" Then
+                    lngSum = lngSum - lngPre
+                    lngPre = lngPre * 100
+                    lngSum = lngSum + lngPre
+                Else
+                    lngSum = lngSum * ReturnNum(varArrNum(lngCtr))
+                End If
+            End If
+        Next
+    Else
+        For lngCtr = LBound(varArrNum, 1) To UBound(varArrNum, 1)
+            If varArrNum(lngCtr) <> "Thousand" And varArrNum(lngCtr) <> "Hundred" Then
+                lngSum = lngSum + ReturnNum(varArrNum(lngCtr))
+            Else
+                lngSum = lngSum * ReturnNum(varArrNum(lngCtr))
+            End If
+        Next
+    End If
+    
+    lngRes = lngSum
+    
+LBL:
+    
+    If Err.Number > 0 Then
+        strError = Err.Description
+        StringToLong = False
+    ElseIf strNum = "" Then
+        strError = "Emty String"
+        StringToLong = False
+    Else
+        StringToLong = True
+    End If
+    
+End Function
+
+
+'*******************************************************************************
+'Developer      : Prince Dubey
+'Date           : 26 Jan 2019
+'Description    : This Function returns the base values.
+'********************************************************************************
+Private Function ReturnNum(ByVal strNum As String) As Long
+    Select Case strNum
+        Case "One": ReturnNum = 1: Case "Two": ReturnNum = 2: Case "Three": ReturnNum = 3: Case "Four": ReturnNum = 4
+        Case "Five": ReturnNum = 5: Case "Six": ReturnNum = 6: Case "Seven": ReturnNum = 7: Case "Eight": ReturnNum = 8
+        Case "Nine": ReturnNum = 9: Case "Ten": ReturnNum = 10: Case "Eleven": ReturnNum = 11: Case "Twelve": ReturnNum = 12
+        Case "Thirteen": ReturnNum = 13: Case "Fourteen": ReturnNum = 14: Case "Fifteen": ReturnNum = 15: Case "Sixteen": ReturnNum = 16
+        Case "Seventeen": ReturnNum = 17: Case "Eighteen": ReturnNum = 18: Case "Nineteen": ReturnNum = 19: Case "Twenty": ReturnNum = 20
+        Case "Thirty": ReturnNum = 30: Case "Forty": ReturnNum = 40: Case "Fifty": ReturnNum = 50: Case "Sixty": ReturnNum = 60
+        Case "Seventy": ReturnNum = 70: Case "Eighty": ReturnNum = 80: Case "Ninety": ReturnNum = 90: Case "Hundred": ReturnNum = 100
+        Case "Thousand": ReturnNum = 1000:
+    End Select
+End Function
+
+
+    
